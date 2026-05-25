@@ -1,0 +1,20 @@
+services:
+  uptime_kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime_kuma
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${CONF_PATH}/uptime_kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Allows Kuma to read container status
+    networks:
+      - home_net
+    labels:
+      caddy: ${DOMAIN}
+      caddy.handle_path: /kuma*
+      caddy.handle_path.reverse_proxy: "{{upstreams 3001}}"
+    restart: unless-stopped
+
+networks:
+  home_net:
+    external: true

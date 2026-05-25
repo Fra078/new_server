@@ -41,14 +41,12 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - APP_KEY=${SPEEDTEST_KEY}
+    ports:
+      - "8765:80"  
     volumes:
       - ${CONF_PATH}/speedtest-tracker:/config
     networks:
       - home_net
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle_path: /speedtest*
-      caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
     restart: unless-stopped
 networks:
   home_net:

@@ -12,7 +12,43 @@ services:
     networks:
       - home_net
     restart: unless-stopped
-
+  netdata:
+    image: netdata/netdata:latest
+    container_name: netdata
+    pid: host
+    network_mode: host
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      # Read-only access to host system for hardware metrics
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${CONF_PATH}/netdata/lib:/var/lib/netdata
+      - ${CONF_PATH}/netdata/cache:/var/cache/netdata
+    restart: unless-stopped
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONF_PATH}/speedtest-tracker:/config
+    networks:
+      - home_net
+    labels:
+      caddy: ${DOMAIN}
+      caddy.handle_path: /speedtest*
+      caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
+    restart: unless-stopped
 networks:
   home_net:
     external: true

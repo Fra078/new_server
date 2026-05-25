@@ -6,13 +6,11 @@ services:
       - TZ=${TZ}
     volumes:
       - ${CONF_PATH}/uptime_kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro # Allows Kuma to read container status
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "3001:3001"
     networks:
       - home_net
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle_path: /kuma*
-      caddy.handle_path.reverse_proxy: "{{upstreams 3001}}"
     restart: unless-stopped
 
 networks:

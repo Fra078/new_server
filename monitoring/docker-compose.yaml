@@ -33,21 +33,6 @@ services:
       - ${CONF_PATH}/netdata/lib:/var/lib/netdata
       - ${CONF_PATH}/netdata/cache:/var/cache/netdata
     restart: unless-stopped
-  speedtest-tracker:
-    image: lscr.io/linuxserver/speedtest-tracker:latest
-    container_name: speedtest-tracker
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - APP_KEY=${SPEEDTEST_KEY}
-    ports:
-      - "8765:80"  
-    volumes:
-      - ${CONF_PATH}/speedtest-tracker:/config
-    networks:
-      - home_net
-    restart: unless-stopped
 networks:
   home_net:
     external: true

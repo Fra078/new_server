@@ -11,6 +11,7 @@ services:
     volumes:
       - ${CONF_PATH}/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${CLOUD_PATH}:/mnt/cloud
     networks:
       - home_net
     labels:

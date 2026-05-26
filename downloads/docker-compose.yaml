@@ -21,5 +21,4 @@ services:
     restart: unless-stopped
 networks:
   home_net:
-    name: home_net
-    external: false
+    external: true

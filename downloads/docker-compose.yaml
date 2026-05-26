@@ -11,13 +11,13 @@ services:
       - ${CONF_PATH}/qbittorrent:/config
       - ${DATA_PATH}:/data
     ports:
-      - 8080:8080 # Temporary for setup
+      - 8080:8080
     networks:
       - home_net
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle_path: /qbit*
-      caddy.handle_path.reverse_proxy: "{{upstreams 8080}}"
+    #labels:
+    #  caddy: ${DOMAIN}
+    #  caddy.handle_path: /qbit*
+    #  caddy.handle_path.reverse_proxy: "{{upstreams 8080}}"
     restart: unless-stopped
 networks:
   home_net:

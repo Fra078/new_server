@@ -18,8 +18,7 @@ services:
     labels:
       # Sets homepage as the default root landing page
       caddy: ${DOMAIN}
-      caddy.handle_path: /home*
-      caddy.handle_path.reverse_proxy: "{{upstreams 3000}}"
+      caddy.reverse_proxy: "{{upstreams 3000}}"
     group_add:
       - "985"  
     restart: unless-stopped

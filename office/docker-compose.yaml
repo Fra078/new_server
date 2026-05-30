@@ -1,0 +1,18 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    user: "${PUID}:${PGID}"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_PATH}:/srv
+      - ${CONF_PATH}/filebrowser/filebrowser.db:/database.db
+      - ${CONF_PATH}/filebrowser/settings.json:/config/settings.json
+    networks:
+      - media_net
+    labels:
+      caddy: ${DOMAIN}
+      caddy.handle_path: /files*
+      caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
+    restart: unless-stopped

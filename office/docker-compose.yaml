@@ -5,6 +5,8 @@ services:
     user: "${PUID}:${PGID}"
     environment:
       - TZ=${TZ}
+    ports:
+      - 8345:80
     volumes:
       - ${DATA_PATH}:/srv
       - ${CONF_PATH}/filebrowser/filebrowser.db:/database.db

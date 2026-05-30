@@ -16,3 +16,6 @@ services:
       caddy.handle_path: /files*
       caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
     restart: unless-stopped
+networks:
+  home_net:
+    external: true

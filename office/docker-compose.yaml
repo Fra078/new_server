@@ -10,12 +10,12 @@ services:
       - ${CONF_PATH}/filebrowser/filebrowser.db:/database.db
       - ${CONF_PATH}/filebrowser/settings.json:/config/settings.json
     networks:
-      - home_net
+      - media_net
     labels:
       caddy: ${DOMAIN}
       caddy.handle_path: /files*
       caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
     restart: unless-stopped
 networks:
-  home_net:
+  media_net:
     external: true

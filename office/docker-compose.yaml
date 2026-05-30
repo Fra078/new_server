@@ -10,7 +10,7 @@ services:
       - ${CONF_PATH}/filebrowser/filebrowser.db:/database.db
       - ${CONF_PATH}/filebrowser/settings.json:/config/settings.json
     networks:
-      - media_net
+      - home_net
     labels:
       caddy: ${DOMAIN}
       caddy.handle_path: /files*

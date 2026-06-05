@@ -26,7 +26,6 @@ services:
     volumes:
       - ${DATA_PATH}:/data
       - ${CONF_PATH}/webdav/config.yml:/config.yml
-    command: -c /config.yml
 networks:
   media_net:
     external: true

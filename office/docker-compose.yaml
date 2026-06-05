@@ -9,7 +9,7 @@ services:
       - 8345:80
     volumes:
       - ${DATA_PATH}:/srv
-      - ${CONF_PATH}/filebrowser/filebrowser.db:/database.db
+      - ${CONF_PATH}/filebrowser/filebrowser.db:/filebrowser.db
       - ${CONF_PATH}/filebrowser/settings.json:/config/settings.json
     networks:
       - media_net

@@ -19,6 +19,6 @@ services:
       caddy.handle.reverse_proxy: "{{upstreams 8096}}"
     restart: unless-stopped
 networks:
-  media_net:
+  home_net:
     name: home_net
     external: true    

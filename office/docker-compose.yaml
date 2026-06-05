@@ -18,6 +18,15 @@ services:
       caddy.handle_path: /files*
       caddy.handle_path.reverse_proxy: "{{upstreams 80}}"
     restart: unless-stopped
+  webdav:
+    image: hacdias/webdav
+    restart: always
+    ports:
+      - "8660:8080"
+    volumes:
+      - ${DATA_PATH}:/data
+      - ${CONF_PATH}/webdav/config.yml:/config.yml
+    command: -c /config.yml
 networks:
   media_net:
     external: true

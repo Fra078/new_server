@@ -6,7 +6,7 @@ services:
     environment:
       - TZ=${TZ}
     ports:
-      - 8345:80
+      - 8345:8080
     volumes:
       - ${DATA_PATH}:/srv
       - ${CONF_PATH}/filebrowser/filebrowser.db:/filebrowser.db

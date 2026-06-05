@@ -10,7 +10,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - HOMEPAGE_VAR_DOMAIN=${DOMAIN}
-      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN},${TS_IP},${LOCAL_IP}
+      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN},${TS_IP}:3000,${LOCAL_IP}:3000
     volumes:
       - ${CONF_PATH}/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro

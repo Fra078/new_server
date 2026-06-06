@@ -12,6 +12,17 @@ services:
     networks:
       - home_net
     restart: unless-stopped
+  glances_monitor:
+    image: nicolargo/glances:latest-full
+    container_name: server_metrics
+    pid: host
+    network_mode: host
+    environment:
+      - GLANCES_OPT=-w
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/host:ro
+    restart: unless-stopped
 networks:
   home_net:
     external: true

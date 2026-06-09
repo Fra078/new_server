@@ -1,6 +1,6 @@
 services:
   spotiflac:
-    image: ghcr.io/iassis/spotiflac:latest
+    image: ghcr.io/fra078/spotiflac-docker-arm64:main
     container_name: spotiflac
     environment:
       - PUID=${PUID}

@@ -10,7 +10,7 @@ services:
       - ${CONF_PATH}/spotiflac:/config
       - ${DATA_PATH}/media/music/spotiflac:/downloads
     ports:
-      - 3002:3001
+      - 3002:5800
     shm_size: "1gb"
     security_opt:
       - seccomp:unconfined

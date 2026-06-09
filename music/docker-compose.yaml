@@ -1,0 +1,17 @@
+services:
+  spotiflac:
+    image: ghcr.io/iassis/spotiflac:latest
+    container_name: spotiflac
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONF_PATH}/spotiflac:/config
+      - ${DATA_PATH}/media/music/spotiflac:/downloads
+    ports:
+      - 3001:3001
+    shm_size: "1gb"
+    security_opt:
+      - seccomp:unconfined
+    restart: unless-stopped

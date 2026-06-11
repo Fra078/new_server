@@ -11,7 +11,7 @@ services:
       - ${CONF_PATH}/qbittorrent:/config
       - ${DATA_PATH}:/data
     ports:
-      - 8080:8080
+      - 9617:8080
     networks:
       - home_net
     #labels:

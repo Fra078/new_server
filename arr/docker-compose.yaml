@@ -13,10 +13,6 @@ services:
       - 8686:8686  
     networks:
       - home_net
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle: /lidarr*
-      caddy.handle.reverse_proxy: "{{upstreams 8686}}"
     restart: unless-stopped
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -31,10 +27,6 @@ services:
       - home_net
     ports:
       - 9696:9696 # Temporary
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle: /prowlarr*
-      caddy.handle.reverse_proxy: "{{upstreams 9696}}"
     restart: unless-stopped
 
   radarr:
@@ -50,11 +42,7 @@ services:
     networks:
       - home_net
     ports:
-      - 7878:7878 # Temporary
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle: /radarr*
-      caddy.handle.reverse_proxy: "{{upstreams 7878}}"
+      - 7878:7878
     restart: unless-stopped
 
   sonarr:
@@ -70,11 +58,7 @@ services:
     networks:
       - home_net
     ports:
-      - 8989:8989 # Temporary
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle: /sonarr*
-      caddy.handle.reverse_proxy: "{{upstreams 8989}}"
+      - 8989:8989
     restart: unless-stopped
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
@@ -89,10 +73,6 @@ services:
       - home_net
     ports:
       - 5055:5055
-    labels:
-      caddy: ${DOMAIN}
-      caddy.handle: /jellyseerr*
-      caddy.handle.reverse_proxy: "{{upstreams 5055}}"
     restart: unless-stopped
 
 networks:

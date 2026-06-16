@@ -14,10 +14,6 @@ services:
       - 9617:8080
     networks:
       - home_net
-    #labels:
-    #  caddy: ${DOMAIN}
-    #  caddy.handle_path: /qbit*
-    #  caddy.handle_path.reverse_proxy: "{{upstreams 8080}}"
     restart: unless-stopped
 networks:
   home_net:

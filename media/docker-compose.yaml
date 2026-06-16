@@ -25,7 +25,7 @@ services:
       - ${CONF_PATH}/navidrome:/data
       - ${DATA_PATH}/media/music:/music:ro
     networks:
-      - media_net
+      - home_net
     ports:
       - 4533:4533
     restart: unless-stopped

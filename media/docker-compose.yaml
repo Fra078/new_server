@@ -18,6 +18,7 @@ services:
     image: deluan/navidrome:latest
     container_name: navidrome
     environment:
+      - ND_SCANINTERVAL=1m
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}

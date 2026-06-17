@@ -1,17 +1,52 @@
 services:
-  spotiflac:
-    image: ghcr.io/fra078/spotiflac-docker-arm64:main
-    container_name: spotiflac
+  deemix:
+    image: registry.gitlab.com/theonlyasstd/deemix-docker:latest
+    container_name: deemix
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ${CONF_PATH}/spotiflac:/config
-      - ${DATA_PATH}/media/music/spotiflac:/downloads
+      - ${CONF_PATH}/deemix:/config
+      - ${DATA_PATH}:/data
     ports:
-      - 3002:5800
-    shm_size: "1gb"
-    security_opt:
-      - seccomp:unconfined
+      - 6595:5800
+    networks:
+      - home_net
     restart: unless-stopped
+
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${CONF_PATH}/slskd:/app/config
+      - ${DATA_PATH}:/data
+    ports:
+      - 5030:5030
+    networks:
+      - home_net
+    restart: unless-stopped
+
+  lidarr-yt:
+    image: randomninjaatk/lidarr-extended:latest
+    container_name: lidarr-yt
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOWNLOAD_YOUTUBE=true
+    volumes:
+      - ${CONF_PATH}/lidarr:/config
+      - ${DATA_PATH}:/data
+    networks:
+      - home_net
+    restart: unless-stopped
+
+networks:
+  home_net:
+    name: home_net
+    external: true

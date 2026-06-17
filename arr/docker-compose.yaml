@@ -74,7 +74,18 @@ services:
     ports:
       - 5055:5055
     restart: unless-stopped
-
+  mixarr:
+    image: ghcr.io/aquantumofdonuts/mixarr:latest
+    container_name: mixarr
+    ports:
+      - "3443:443"  # HTTPS Access
+      - "3010:3010" # Web UI (HTTP)
+    volumes:
+      - ${CONF_PATH}/mixarr:/data
+    environment:
+      - SESSION_SECRET=GGGGAGAGAGGGEGEGXCYCYYVUBINUEVBAFVDS
+      - BASE_URL=https://${TS_IP}:3443
+    restart: unless-stopped
 networks:
   home_net:
     name: home_net

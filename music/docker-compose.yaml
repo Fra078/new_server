@@ -1,6 +1,6 @@
 services:
   deemix:
-    image: registry.gitlab.com/theonlyasstd/deemix-docker:latest
+    image: ghcr.io/bambanah/deemix:latest
     container_name: deemix
     environment:
       - PUID=${PUID}
@@ -10,7 +10,7 @@ services:
       - ${CONF_PATH}/deemix:/config
       - ${DATA_PATH}:/data
     ports:
-      - 6595:5800
+      - 6595:6595
     networks:
       - home_net
     restart: unless-stopped
@@ -31,17 +31,22 @@ services:
       - home_net
     restart: unless-stopped
 
-  lidarr-yt:
-    image: randomninjaatk/lidarr-extended:latest
-    container_name: lidarr-yt
+  lidarr-downloader:
+    image: angrido/lidarr-downloader:latest
+    container_name: lidarr-downloader
+    ports:
+      - 5005:5000
+    volumes:
+      - ${CONF_PATH}/lidarr-downloader:/config
+      - ${DATA_PATH}:/data
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - DOWNLOAD_YOUTUBE=true
-    volumes:
-      - ${CONF_PATH}/lidarr:/config
-      - ${DATA_PATH}:/data
+      - LIDARR_URL=http://lidarr:8686
+      - LIDARR_API_KEY=your_lidarr_api_key_here
+      - DOWNLOAD_PATH=/data/downloads/youtube
+      - LIDARR_PATH=/data/media/music
     networks:
       - home_net
     restart: unless-stopped

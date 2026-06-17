@@ -84,7 +84,7 @@ services:
       - ${CONF_PATH}/mixarr:/data
     environment:
       - SESSION_SECRET=GGGGAGAGAGGGEGEGXCYCYYVUBINUEVBAFVDS
-      - BASE_URL=https://${TS_IP}:3443
+      - BASE_URL=https://${DOMAIN}:3443
     restart: unless-stopped
 networks:
   home_net:

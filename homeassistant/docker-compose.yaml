@@ -10,4 +10,5 @@ services:
     privileged: true
     network_mode: host
     environment:
+      DISABLE_JEMALLOC: true
       TZ: Europe/Rome

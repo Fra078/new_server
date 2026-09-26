@@ -1,4 +1,14 @@
 services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - ${CONF_PATH}/mosquitto/config:/mosquitto/config
+      - ${CONF_PATH}/mosquitto/data:/mosquitto/data
+      - ${CONF_PATH}//mosquitto/log:/mosquitto/log
   homeassistant:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
@@ -12,3 +22,4 @@ services:
     environment:
       DISABLE_JEMALLOC: true
       TZ: Europe/Rome
+      

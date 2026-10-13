@@ -60,20 +60,6 @@ services:
     ports:
       - 8989:8989
     restart: unless-stopped
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${CONF_PATH}/jellyseerr:/app/config
-    networks:
-      - home_net
-    ports:
-      - 5055:5055
-    restart: unless-stopped
 networks:
   home_net:
     name: home_net

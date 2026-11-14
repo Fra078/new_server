@@ -1,0 +1,25 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose config
+        run: |
+          set -e
+          for f in */docker-compose.yaml downloads/gluetun.example.yaml; do
+            echo "::group::$f"
+            docker compose --env-file .env.example -f "$f" config -q
+            echo "::endgroup::"
+          done
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: shellcheck -x host/install.sh host/scripts/*.sh scripts/*.sh

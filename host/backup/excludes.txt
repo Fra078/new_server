@@ -1,0 +1,15 @@
+# Escluso dal backup restic: rigenerabile, voluminoso o inutile.
+/home/fra078/appdata/media/jellyfin/cache
+/home/fra078/appdata/media/jellyfin/log
+/home/fra078/appdata/media/jellyfin/data/transcodes
+/home/fra078/appdata/arr/*/MediaCover
+/home/fra078/appdata/arr/*/logs
+/home/fra078/appdata/arr/*/logs.db*
+/home/fra078/appdata/homeassistant/homeassistant/home-assistant_v2.db*
+/home/fra078/appdata/homeassistant/homeassistant/backup-*
+/home/fra078/appdata/homeassistant/homeassistant/deps
+/home/fra078/appdata/homeassistant/homeassistant/tts
+/home/fra078/appdata/qbittorrent/.cache
+*.log
+*.log.[0-9]*
+/etc/homeserver/restic.pass

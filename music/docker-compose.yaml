@@ -1,58 +1,72 @@
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-env: &env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  TZ: ${TZ}
+
+x-media: &media
+  type: bind
+  source: ${MEDIA_PATH}
+  target: /data
+  bind: { create_host_path: false }
+
+x-nas: &nas
+  homeserver.requires-nas: "true"
+
 services:
   deemix:
-    image: ghcr.io/bambanah/deemix:latest
+    image: ghcr.io/bambanah/deemix:v4.5.2
     container_name: deemix
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+    environment: *env
     volumes:
-      - ${CONF_PATH}/deemix:/config
-      - ${DATA_PATH}:/data
+      - ${APPDATA}/music/deemix:/config
+      - *media
     ports:
-      - 6595:6595
-    networks:
-      - home_net
+      - "127.0.0.1:6595:6595"
+    networks: [media_net]
+    labels: *nas
+    logging: *logging
     restart: unless-stopped
 
   slskd:
-    image: slskd/slskd:latest
+    image: slskd/slskd:0.25.1
     container_name: slskd
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - SLSKD_REMOTE_CONFIGURATION=true
+      <<: *env
+      SLSKD_REMOTE_CONFIGURATION: "true"
     volumes:
-      - ${CONF_PATH}/slskd:/app/config
-      - ${DATA_PATH}:/data
+      - ${APPDATA}/music/slskd:/app/config
+      - *media
     ports:
-      - 5030:5030
-    networks:
-      - home_net
+      - "127.0.0.1:5030:5030"
+    networks: [media_net]
+    labels: *nas
+    logging: *logging
     restart: unless-stopped
 
   lidarr-downloader:
-    image: angrido/lidarr-downloader:latest
+    image: angrido/lidarr-downloader:latest@sha256:7df4fdf96a95b54416cb43e63c42ebb8747e0f1a71638541f2b1154df70c6609
     container_name: lidarr-downloader
-    ports:
-      - 5005:5000
-    volumes:
-      - ${CONF_PATH}/lidarr-downloader:/config
-      - ${DATA_PATH}:/data
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - LIDARR_URL=http://lidarr:8686
-      - LIDARR_API_KEY=${LIDARR_API_KEY}
-      - DOWNLOAD_PATH=/data/downloads/youtube
-      - LIDARR_PATH=/data/media/music
-    networks:
-      - home_net
+      <<: *env
+      LIDARR_URL: http://lidarr:8686
+      LIDARR_API_KEY: ${LIDARR_API_KEY}
+      DOWNLOAD_PATH: /data/downloads/youtube
+      LIDARR_PATH: /data/media/music
+    volumes:
+      - ${APPDATA}/music/lidarr-downloader:/config
+      - *media
+    ports:
+      - "127.0.0.1:5005:5000"
+    networks: [media_net]
+    labels: *nas
+    logging: *logging
     restart: unless-stopped
 
 networks:
-  home_net:
-    name: home_net
+  media_net:
+    name: media_net
     external: true

@@ -1,0 +1,44 @@
+# Livello infrastruttura: reti condivise + accesso in sola lettura al socket Docker.
+# NON gestito da Portainer: si avvia con scripts/infra-up.sh (prima di tutti gli altri stack).
+name: core
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  socket-proxy:
+    image: lscr.io/linuxserver/socket-proxy:3.4.7-r0-ls105
+    container_name: socket-proxy
+    environment:
+      TZ: ${TZ}
+      # Solo lettura: niente POST, niente exec, niente start/stop.
+      CONTAINERS: 1
+      IMAGES: 1
+      INFO: 1
+      VERSION: 1
+      PING: 1
+      POST: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    read_only: true
+    tmpfs:
+      - /run
+    ports:
+      - "127.0.0.1:2375:2375" # per Glances (host network)
+    networks:
+      - socket_net
+      - default
+    logging: *logging
+    restart: unless-stopped
+
+networks:
+  # Servizi media che devono parlarsi (*arr, download client, Jellyfin, Navidrome, Homepage, Kuma)
+  media_net:
+    name: media_net
+  # Rete interna: solo homepage/uptime_kuma <-> socket-proxy, nessuna uscita verso Internet
+  socket_net:
+    name: socket_net
+    internal: true
+  default:
+    name: core_default

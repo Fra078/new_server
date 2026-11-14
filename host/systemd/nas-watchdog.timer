@@ -1,0 +1,10 @@
+[Unit]
+Description=Controllo NAS ogni minuto
+
+[Timer]
+OnBootSec=3min
+OnUnitInactiveSec=1min
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Verifica integrità del repository restic
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/homeserver/backup.sh check
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=2h

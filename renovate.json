@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "docker:pinDigests"],
+  "timezone": "Europe/Rome",
+  "schedule": ["before 6am on saturday"],
+  "prConcurrentLimit": 5,
+  "packageRules": [
+    {
+      "description": "Immagini linuxserver: versione-lsNNN",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["lscr.io/linuxserver/**"],
+      "versioning": "regex:^(?<compatibility>nightly-)?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-ls(?<revision>\\d+)$"
+    },
+    {
+      "description": "Jellyfin linuxserver: 12.0ubuNNNN-lsNN",
+      "matchPackageNames": ["lscr.io/linuxserver/jellyfin"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)ubu(?<compatibility>\\d+)-ls(?<patch>\\d+)$"
+    },
+    {
+      "description": "Mosquitto: solo varianti -alpine",
+      "matchPackageNames": ["eclipse-mosquitto"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<compatibility>alpine)$"
+    },
+    {
+      "description": "Uptime Kuma: restare su 1.x finché non si pianifica la migrazione a 2.x",
+      "matchPackageNames": ["louislam/uptime-kuma"],
+      "allowedVersions": "<2.0.0"
+    },
+    {
+      "description": "Glances: varianti -full",
+      "matchPackageNames": ["nicolargo/glances"],
+      "versioning": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-(?<compatibility>full)$"
+    },
+    {
+      "description": "Gli example non sono deployati",
+      "matchFileNames": ["**/*.example.yaml"],
+      "enabled": false
+    }
+  ]
+}

@@ -1,25 +1,38 @@
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:v1.13.1
     container_name: homepage
-    user: "1000:985"
-    ports:
-      - 3000:3000
+    user: "${PUID}:${PGID}"
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - HOMEPAGE_VAR_DOMAIN=${DOMAIN}
-      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN},${TS_IP}:3000,${LOCAL_IP}:3000
+      TZ: ${TZ}
+      HOMEPAGE_ALLOWED_HOSTS: ${HOMEPAGE_ALLOWED_HOSTS}
     volumes:
-      - ${CONF_PATH}/homepage:/app/config
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${CLOUD_PATH}:/mnt/cloud
-    networks:
-      - home_net
-    group_add:
-      - "985"  
+      - ${APPDATA}/homepage/homepage:/app/config
+      # /mnt in sola lettura con propagazione: vede il NAS quando è montato
+      # senza dipenderne (widget spazio disco su /mnt/host/mycloud).
+      - type: bind
+        source: /mnt
+        target: /mnt/host
+        read_only: true
+        bind: { propagation: rslave }
+    # Docker via socket-proxy (config/docker.yaml -> host: socket-proxy, port: 2375)
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [media_net, socket_net, mgmt_net]
+    logging: *logging
     restart: unless-stopped
+
 networks:
-  home_net:
+  media_net:
+    name: media_net
+    external: true
+  socket_net:
+    name: socket_net
+    external: true
+  mgmt_net:
+    name: mgmt_net
     external: true

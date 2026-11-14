@@ -1,0 +1,30 @@
+# Portainer: gestisce gli stack applicativi (git stacks da questo repo).
+# NON gestito da Portainer stesso: si avvia con scripts/infra-up.sh.
+# È l'unico container con accesso in scrittura al socket Docker.
+name: portainer
+
+services:
+  portainer:
+    image: portainer/portainer-ce:lts@sha256:8d2f5c9fbc5b8490fb3a12efadbad74978e22991911e1db611d8a45871775112
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - "127.0.0.1:9000:9000" # UI via https://portainer.cetacean-fish.ts.net
+    networks:
+      - mgmt_net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+    restart: unless-stopped
+
+volumes:
+  portainer_data:
+    name: portainer_data
+    external: true
+
+networks:
+  # Solo portainer <-> homepage (widget)
+  mgmt_net:
+    name: mgmt_net

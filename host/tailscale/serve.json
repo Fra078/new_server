@@ -1,11 +1,6 @@
 {
   "version": "0.0.1",
   "services": {
-    "svc:deemix": {
-      "endpoints": {
-        "tcp:443": "http://127.0.0.1:6595"
-      }
-    },
     "svc:files": {
       "endpoints": {
         "tcp:443": "http://127.0.0.1:8345"

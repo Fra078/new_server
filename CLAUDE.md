@@ -8,7 +8,7 @@ Tenerlo aggiornato a ogni cambiamento strutturale.
 - **OS:** Debian 13 (trixie), kernel Raspberry Pi. Utente `fra078` (uid/gid 1000, gruppo `docker` = 985).
 - **NAS:** WD My Cloud Home `192.168.1.18`, share SMB `admin123` montata su `/mnt/mycloud` (CIFS). Contiene media, download e documenti. Gli hardlink funzionano (download e media sullo stesso fs).
 - **Accesso:** solo **Tailscale** (tailnet `cetacean-fish.ts.net`). Ogni servizio ha un Tailscale Service `https://<nome>.cetacean-fish.ts.net` che inoltra a `127.0.0.1:<porta>`. In LAN restano aperti solo Jellyfin (8096), Mosquitto (1883) e Home Assistant (8123, host network).
-- **Gestione container:** Portainer (git stack da questo repo, branch `main`).
+- **Gestione container:** Portainer (git stack da questo repo, branch `main`). **Ogni stack controlla `main` ogni 5 minuti e si ridistribuisce da solo**: un merge su `main` (anche di una PR di Renovate) va in produzione entro 5 minuti. Le variabili degli stack vivono in Portainer: dopo una modifica a `.env` lanciare `scripts/portainer-stacks.sh`.
 - **Repo sul Pi:** `/opt/homeserver` (clone), variabili in `/opt/homeserver/.env` (non in git).
 
 ## Architettura
@@ -47,7 +47,7 @@ Solo **Portainer** monta `docker.sock` in scrittura. Homepage e Kuma usano `tcp:
 | arr | prowlarr | 127.0.0.1:9696 | prowlarr | no |
 | arr | sonarr / radarr / lidarr | 127.0.0.1:8989 / 7878 / 8686 | sonarr / radarr / lidarr | sì |
 | downloads | qbittorrent | 127.0.0.1:9617 | qbit | sì |
-| music | deemix / slskd / lidarr-downloader | 127.0.0.1:6595 / 5030 / 5005 | deemix / slskd / — | sì |
+| music | deemix / slskd / lidarr-downloader | 127.0.0.1:6595 / 5030 / 5005 | — / slskd / — | sì |
 | media | jellyfin | **8096 LAN** | jellyfin | sì |
 | media | navidrome | 127.0.0.1:4533 | navidrome | sì |
 | office | filebrowser / webdav | 127.0.0.1:8345 / 8660 | files / webdav | sì |
@@ -100,7 +100,7 @@ systemctl start backup.service && journalctl -u backup -f
 7. Controllare in Tailscale admin console che i Services siano approvati per il nodo.
 
 ## Operazioni comuni
-- **Aggiornare un servizio:** cambiare il tag dell'immagine nel compose (o accettare la PR di Renovate) → merge su `main` → `scripts/portainer-stacks.sh <stack>` (o "Pull and redeploy" in Portainer).
+- **Aggiornare un servizio:** cambiare il tag dell'immagine nel compose (o accettare la PR di Renovate) → merge su `main` → Portainer lo applica entro 5 minuti (subito: `scripts/portainer-stacks.sh <stack>`).
 - **Aggiungere un servizio:** aggiungerlo al compose dello stack giusto con: porta `127.0.0.1:`, `logging`, rete corretta, `bind.create_host_path: false` + label `homeserver.requires-nas` se usa il NAS. Poi un Tailscale Service in `host/tailscale/serve.json` (da definire anche nella admin console) e `tailscale serve set-config --all host/tailscale/serve.json`.
 - **Variabili:** sono in `/opt/homeserver/.env`; dopo una modifica `scripts/portainer-stacks.sh` le ripassa a tutti gli stack.
 - **Modifiche a core/ o portainer/:** `scripts/infra-up.sh`.
@@ -118,6 +118,7 @@ systemctl start backup.service && journalctl -u backup -f
 - **`tg_forwarder` rimosso** (novembre 2026).
 
 ## TODO
+- deemix: probabile rimozione (nessun URL Tailscale; raggiungibile solo con `ssh -L 6595:127.0.0.1:6595`). Rimuovendolo, controllare il plugin Deemix di Lidarr.
 - VPN per qBittorrent (e slskd): pronto `downloads/gluetun.example.yaml`, serve un provider con WireGuard + port forwarding.
 - Copia offsite del backup e backup dei dati unici del NAS.
 - Limiti RAM (`mem_limit`) dopo qualche giorno di misure con i cgroup memoria attivi.

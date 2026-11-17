@@ -60,7 +60,7 @@ stop_nas_containers() {
 # kuma_push <url> <up|down> <messaggio>
 kuma_push() {
     [ -n "${1:-}" ] || return 0
-    curl -fsS -m 10 -G "$1" --data-urlencode "status=$2" --data-urlencode "msg=$3" >/dev/null 2>&1 || true
+    curl -fsS -m 10 -G "${1%%\?*}" --data-urlencode "status=$2" --data-urlencode "msg=$3" >/dev/null 2>&1 || true
 }
 
 set_state() { echo "$1" >"$STATE_DIR/nas.state"; }

@@ -42,6 +42,7 @@ for name in "${targets[@]}"; do
         api POST "/stacks/create/standalone/repository?endpointId=$ep" -d "$(jq -n \
             --argjson env "$env_json" --arg n "$name" --arg url "$REPO_URL" --arg ref "$REPO_REF" \
             '{name: $n, repositoryURL: $url, repositoryReferenceName: $ref,
-              composeFile: ($n + "/docker-compose.yaml"), env: $env}')" >/dev/null
+              composeFile: ($n + "/docker-compose.yaml"), env: $env,
+              autoUpdate: {interval: "5m"}}')" >/dev/null
     fi
 done

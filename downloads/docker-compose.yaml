@@ -5,7 +5,7 @@ x-logging: &logging
 
 services:
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:5.2.1_v2.0.12-ls459
+    image: lscr.io/linuxserver/qbittorrent:5.2.1_v2.0.12-ls459@sha256:715d2bfbcf1cd3d734cbbd4fbd599eb7ea0642eaa079a372dd0d343f59516700
     container_name: qbittorrent
     environment:
       PUID: ${PUID}

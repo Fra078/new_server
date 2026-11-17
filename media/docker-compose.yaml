@@ -4,7 +4,7 @@ x-logging: &logging
 
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
+    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48@sha256:0f42497a69fa0441bfd5f9d6bba8694f2a656ec984e571d0ac04c6dd91250039
     container_name: jellyfin
     environment:
       PUID: ${PUID}
@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
 
   navidrome:
-    image: deluan/navidrome:0.62.0
+    image: deluan/navidrome:0.62.0@sha256:c4b5cb36a790b3eb63ca6a68bbe2fe149c2d7fa2e586f7a480e61db630e6664b
     container_name: navidrome
     environment:
       PUID: ${PUID}

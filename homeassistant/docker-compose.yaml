@@ -4,7 +4,7 @@ x-logging: &logging
 
 services:
   mosquitto:
-    image: eclipse-mosquitto:2.1.2-alpine
+    image: eclipse-mosquitto:2.1.2-alpine@sha256:75d6662dee52c947dc9dd9c29f1d8d7ffef78ddaf38001caa09755681e8bbc98
     container_name: mosquitto
     ports:
       - "1883:1883" # resta in LAN per i dispositivi IoT (autenticazione obbligatoria)
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:2026.8.2
+    image: ghcr.io/home-assistant/home-assistant:2026.8.2@sha256:56690a89c79a0de98035e1719f8324a92d5859c1192ff45adb0230ea81cb42a5
     container_name: homeassistant
     # privileged + host network: necessari per Bluetooth, mDNS/discovery e dispositivi locali
     privileged: true

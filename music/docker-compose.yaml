@@ -18,7 +18,7 @@ x-nas: &nas
 
 services:
   deemix:
-    image: ghcr.io/bambanah/deemix:v4.5.2
+    image: ghcr.io/bambanah/deemix:v4.5.2@sha256:cd53202a41e77066419af2af9e1ff68b2d68682df3698e6a5e84d9b29a12912d
     container_name: deemix
     environment: *env
     volumes:
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   slskd:
-    image: slskd/slskd:0.25.1
+    image: slskd/slskd:0.25.1@sha256:ab9ed50e028b524cefdb7c1dd8ebca368a076e18441ee8ac2326473eb850b4c3
     container_name: slskd
     environment:
       <<: *env

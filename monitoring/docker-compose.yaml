@@ -4,7 +4,7 @@ x-logging: &logging
 
 services:
   uptime_kuma:
-    image: louislam/uptime-kuma:1.23.17
+    image: louislam/uptime-kuma:1.23.17@sha256:3d632903e6af34139a37f18055c4f1bfd9b7205ae1138f1e5e8940ddc1d176f9
     container_name: uptime_kuma
     environment:
       TZ: ${TZ}
@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   glances:
-    image: nicolargo/glances:4.5.4-full
+    image: nicolargo/glances:4.5.4-full@sha256:4b95c50820107884574059741a1a787bfae3b499e8b003be32abc9d756084c06
     container_name: glances
     pid: host
     network_mode: host

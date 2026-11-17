@@ -9,8 +9,8 @@ set -a
 . "$REPO/.env"
 set +a
 
-STACKS=(homeassistant monitoring arr downloads music media office homepage)
-STACK_VARS=(TZ PUID PGID APPDATA MEDIA_PATH OFFICE_PATH HOMEPAGE_ALLOWED_HOSTS LIDARR_API_KEY)
+STACKS=(homeassistant monitoring arr downloads music media office homepage sync)
+STACK_VARS=(TZ PUID PGID APPDATA MEDIA_PATH OFFICE_PATH HOMEPAGE_ALLOWED_HOSTS LIDARR_API_KEY SYNC_LOCAL_PATH)
 
 api() {
     local method=$1 path=$2

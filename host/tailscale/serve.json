@@ -76,6 +76,11 @@
         "tcp:443": "http://127.0.0.1:8989"
       }
     },
+    "svc:sync": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8384"
+      }
+    },
     "svc:webdav": {
       "endpoints": {
         "tcp:443": "http://127.0.0.1:8660"

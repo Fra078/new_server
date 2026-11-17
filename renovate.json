@@ -9,7 +9,7 @@
       "description": "Immagini linuxserver: versione-lsNNN",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["lscr.io/linuxserver/**"],
-      "versioning": "regex:^(?<compatibility>nightly-)?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-ls(?<revision>\\d+)$"
+      "versioning": "regex:^(?<compatibility>nightly-)?v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.?(?<build>\\d+)?-ls(?<revision>\\d+)$"
     },
     {
       "description": "Jellyfin linuxserver: 12.0ubuNNNN-lsNN",

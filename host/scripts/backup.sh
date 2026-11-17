@@ -18,6 +18,7 @@ STOP_FOR_BACKUP=(sonarr radarr lidarr prowlarr jellyfin navidrome uptime_kuma po
 
 PATHS=(
     /home/fra078/appdata
+    /home/fra078/sync
     /var/lib/docker/volumes/portainer_data
     /opt/homeserver/.env
     /etc/fstab

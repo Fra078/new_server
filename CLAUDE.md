@@ -20,7 +20,7 @@ Internet ── router ── LAN 192.168.1.0/24
                             ├─ systemd: nas-mount, nas-watchdog, backup               (host/systemd)
                             └─ Docker
                                  ├─ infra (docker compose, fuori da Portainer): core/, portainer/
-                                 └─ app (Portainer git stack): homeassistant monitoring arr downloads music media office homepage
+                                 └─ app (Portainer git stack): homeassistant monitoring arr downloads music media office homepage sync
 ```
 
 ### Reti Docker
@@ -30,6 +30,7 @@ Internet ── router ── LAN 192.168.1.0/24
 | `socket_net` (da `core/`, `internal`) | socket-proxy, homepage, uptime_kuma | accesso al Docker API in **sola lettura**, nessuna uscita a Internet |
 | `mgmt_net` (da `portainer/`) | portainer, homepage | widget Portainer; Portainer isolato da tutto il resto |
 | `office_default` | filebrowser, webdav | isolati |
+| `sync_default` | syncthing | isolato |
 | `homeassistant_default` | mosquitto | HA è in host network e lo raggiunge su `localhost:1883` |
 | host | homeassistant, glances | discovery/Bluetooth (HA), metriche host (Glances) |
 
@@ -52,6 +53,7 @@ Solo **Portainer** monta `docker.sock` in scrittura. Homepage e Kuma usano `tcp:
 | media | navidrome | 127.0.0.1:4533 | navidrome | sì |
 | office | filebrowser / webdav | 127.0.0.1:8345 / 8660 | files / webdav | sì |
 | homepage | homepage | 127.0.0.1:3000 | home | no (vede `/mnt` in sola lettura) |
+| sync | syncthing | 127.0.0.1:8384, **22000 tcp/udp LAN+Tailscale** | sync | no (vede `/mnt` con propagazione) |
 
 Il Service `mycloud` (tcp 445 → NAS) permette di raggiungere la share SMB da fuori casa via Tailscale.
 
@@ -60,6 +62,7 @@ Il Service `mycloud` (tcp 445 → NAS) permette di raggiungere la share SMB da f
 - **Portainer:** volume `portainer_data` (utenti, impostazioni, variabili degli stack).
 - **Media:** `/mnt/mycloud/media_stack` (`MEDIA_PATH`): `downloads/` e `media/{movies,tv,anime,music,Privati}`.
 - **Documenti:** `/mnt/mycloud/office` (`OFFICE_PATH`).
+- **Syncthing:** cartelle piccole in `/home/fra078/sync` (`SYNC_LOCAL_PATH`, NVMe, nel backup); cartelle grandi in `/mnt/mycloud/sync` (NAS).
 
 ## Il NAS e i blackout (perché esistono nas-mount/nas-watchdog)
 Problema: dopo un blackout il Pi riparte in ~30 s, il NAS in minuti. Prima i container partivano su una cartella vuota o restavano bloccati su un mount CIFS morto.
@@ -74,10 +77,23 @@ Soluzione:
 - Un container fermato a mano ma con la label viene riavviato dal watchdog alla prossima ripresa del NAS: per disattivarlo davvero, toglierlo dal compose.
 - Consiglio hardware: un piccolo **UPS** per Pi + NAS + router (l'NVMe ha registrato decine di spegnimenti non puliti).
 
+## Syncthing
+Il Pi è il nodo sempre acceso: PC e telefoni si sincronizzano con lui (e tra loro quando sono raggiungibili).
+- **Rete:** discovery globale, relay, NAT traversal e annunci locali **disattivati**. I dispositivi si conoscono con indirizzi espliciti:
+  il Pi è `tcp://raspberrypi.cetacean-fish.ts.net:22000, tcp://192.168.1.54:22000`. Fuori casa serve Tailscale attivo.
+- **ID dispositivo del Pi:** `docker exec syncthing syncthing device-id` (oppure nell'interfaccia web, Azioni → Mostra ID).
+- **Cartelle nel container:** `/data/local/<nome>` = `/home/fra078/sync/<nome>` (NVMe); `/data/mnt/mycloud/sync/<nome>` = NAS.
+  Se il NAS non c'è, le cartelle NAS vanno in errore "folder marker missing" e si fermano senza cancellare nulla; tornano da sole.
+- **Versioning:** sul Pi le cartelle hanno versioning *staggered* (30 giorni) in `.stversions`: un file cancellato o sovrascritto su un dispositivo si recupera dal Pi.
+- **Obsidian:** cartella `obsidian` (`/home/fra078/sync/obsidian`), `.stignore` esclude `.obsidian/workspace*.json` (cambia a ogni apertura e genera conflitti).
+  Android: app **Syncthing-Fork** (l'app ufficiale è stata dismessa). PC: Syncthing come servizio utente.
+- **Aggiungere un dispositivo:** sul dispositivo aggiungere il Pi con il suo ID e gli indirizzi sopra; sul Pi accettare dall'interfaccia web (o `syncthing cli config devices add`), impostando l'indirizzo del dispositivo `tcp://<nome>.cetacean-fish.ts.net:22000`.
+- **CLI:** `docker exec syncthing syncthing cli --home /config config ...` (es. `... config folders list`).
+
 ## Backup
 - **restic** sul NAS: repo `/mnt/mycloud/backup/restic-raspberrypi`, password `/etc/homeserver/restic.pass` (**copiata anche nel password manager**: senza, i backup sono illeggibili).
 - `backup.timer` ogni notte alle 03:30: ferma ~1-2 min i container con SQLite (sonarr, radarr, lidarr, prowlarr, jellyfin, navidrome, uptime_kuma, portainer), copia, li riavvia. Retention 7 giornalieri / 4 settimanali / 6 mensili. `backup-check.timer` la domenica verifica il 5% dei dati.
-- **Incluso:** `appdata`, `portainer_data`, `/opt/homeserver/.env`, `/etc/{fstab,.smbcreds,homeserver,docker/daemon.json,ssh/sshd_config.d}`, `authorized_keys`, e in `/var/backups/homeserver` export di Tailscale Serve, pacchetti, `docker inspect`, `cmdline.txt`/`config.txt`.
+- **Incluso:** `appdata`, `/home/fra078/sync`, `portainer_data`, `/opt/homeserver/.env`, `/etc/{fstab,.smbcreds,homeserver,docker/daemon.json,ssh/sshd_config.d}`, `authorized_keys`, e in `/var/backups/homeserver` export di Tailscale Serve, pacchetti, `docker inspect`, `cmdline.txt`/`config.txt`.
 - **Escluso:** cache/log di Jellyfin, `MediaCover` e log degli *arr, db storico e backup di Home Assistant (`host/backup/excludes.txt`).
 - Il NAS stesso **non** ha un backup: `Privati`, `office`, `projects`, `Google Photos` esistono in una sola copia. TODO: copia offsite (es. `restic copy` verso Backblaze B2).
 
@@ -116,6 +132,7 @@ systemctl start backup.service && journalctl -u backup -f
 - **Portainer fuori da Portainer:** è l'infrastruttura che gestisce gli altri stack; se si rompe deve poter ripartire da `docker compose`.
 - **Versioni fissate** (niente `:latest`): gli aggiornamenti arrivano come PR di Renovate e si accettano consapevolmente. Lidarr nightly e le immagini senza tag di versione sono fissate per digest.
 - **Rete media_net unica per lo stack media:** i servizi devono comunque parlarsi; separarli ulteriormente aggiungerebbe complessità senza ridurre davvero il rischio. L'isolamento è applicato dove conta: Portainer, socket Docker, office.
+- **Syncthing senza server pubblici:** tutto passa da LAN o Tailscale, più privato; il Pi fa da nodo sempre acceso.
 - **Kuma per le notifiche:** nessun canale esterno per scelta; monitor push "NAS" e "Backup".
 - **`tg_forwarder` rimosso** (novembre 2026).
 
@@ -128,5 +145,6 @@ systemctl start backup.service && journalctl -u backup -f
 - UPS.
 
 ## Storia
+- 2026-11-17: aggiunto Syncthing (stack `sync`), prima cartella: vault Obsidian.
 - 2026-11-17: deploy della ristrutturazione. Trovate e rimosse cartelle vuote create da Docker l'11 giugno *sotto* il mountpoint (container partiti senza NAS: il problema dei blackout). Test superati: NAS bloccato a server acceso (container NAS fermati in ~3 min, ripresi ~1 min dopo il ritorno); riavvio con NAS bloccato (servizi indipendenti su, container NAS fermi, nulla scritto sull'NVMe; ripresa 13 s dopo il ritorno del NAS). Integrazioni HA qBittorrent/Kuma/Glances passate da `localhost` a `127.0.0.1` (le porte ora ascoltano solo su IPv4 locale).
 - 2026-11-14: ristrutturazione — backup restic, gestione NAS al boot, porte su 127.0.0.1, reti separate, socket-proxy, versioni fissate, rotazione log, hardening SSH, rimozione servizi inutilizzati (tg_forwarder, jellyseerr, mixarr, spotiflac, netdata, speedtest-tracker, dashy, homarr, caddy).

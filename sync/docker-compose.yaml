@@ -1,0 +1,41 @@
+# Syncthing: il Pi è il nodo sempre acceso a cui si sincronizzano PC e telefoni.
+# Connessioni solo via LAN e Tailscale (discovery globale e relay disattivati nelle opzioni).
+# Cartelle piccole (Obsidian) sull'NVMe in ${SYNC_LOCAL_PATH} -> /data/local (incluse nel backup).
+# Cartelle grandi sul NAS in /mnt/mycloud/sync -> /data/mnt/mycloud/sync: /mnt è montato con
+# propagazione, quindi il NAS compare/scompare senza riavviare il container; se manca, Syncthing
+# mette in pausa solo quelle cartelle (marker .stfolder assente) e non propaga cancellazioni.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:v2.1.7-ls237
+    container_name: syncthing
+    hostname: raspberrypi
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    volumes:
+      - ${APPDATA}/sync/syncthing:/config
+      - type: bind
+        source: ${SYNC_LOCAL_PATH}
+        target: /data/local
+        bind: { create_host_path: false }
+      - type: bind
+        source: /mnt
+        target: /data/mnt
+        bind: { propagation: rslave }
+    ports:
+      - "127.0.0.1:8384:8384" # interfaccia web via https://sync.cetacean-fish.ts.net
+      - "22000:22000/tcp" # sincronizzazione: LAN + Tailscale (nessun port forward sul router)
+      - "22000:22000/udp"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8384/rest/noauth/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    logging: *logging
+    restart: unless-stopped

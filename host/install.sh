@@ -31,6 +31,13 @@ systemctl start nas-watchdog.timer backup.timer backup-check.timer
 echo "== fstab NAS"
 line=$(grep -v '^#' "$H/fstab.cifs")
 if ! grep -qxF "$line" /etc/fstab; then
+    # Un vecchio automount va smontato prima di cambiare fstab, altrimenti resta orfano e ogni
+    # accesso a /mnt/mycloud si blocca. Richiede che i container che usano il NAS siano fermi.
+    if systemctl is-active -q mnt-mycloud.automount; then
+        echo "ATTENZIONE: automount attivo. Fermare i container che usano il NAS e poi:"
+        echo "  systemctl stop mnt-mycloud.automount mnt-mycloud.mount && $0"
+        exit 1
+    fi
     cp /etc/fstab "/etc/fstab.bak-$(date +%Y%m%d%H%M%S)"
     sed -i '\#[[:space:]]/mnt/mycloud[[:space:]]#d' /etc/fstab
     echo "$line" >>/etc/fstab

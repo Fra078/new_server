@@ -80,7 +80,16 @@ Soluzione:
 ## Syncthing
 Il Pi è il nodo sempre acceso: PC e telefoni si sincronizzano con lui (e tra loro quando sono raggiungibili).
 - **Rete:** discovery globale, relay, NAT traversal e annunci locali **disattivati**. I dispositivi si conoscono con indirizzi espliciti:
-  il Pi è `tcp://raspberrypi.cetacean-fish.ts.net:22000, tcp://192.168.1.54:22000`. Fuori casa serve Tailscale attivo.
+  il Pi è `tcp://100.82.132.126:22000, tcp://192.168.1.54:22000`. Si usano gli IP Tailscale e non i nomi MagicDNS perché
+  dal container il DNS di Tailscale non è garantito. Fuori casa serve Tailscale attivo.
+- **Dispositivi:**
+  | Nome | ID (prime cifre) | Indirizzo | Cartelle |
+  |---|---|---|---|
+  | raspberrypi (Pi) | `NNM3ADQ` | 100.82.132.126 / 192.168.1.54 | obsidian |
+  | bluefin-pc | `5UWSKHR` | 100.90.6.80 | obsidian → `~/Documenti/Obsidian Vault` |
+- **PC (bluefin):** binario ufficiale in `~/.local/bin/syncthing` (firma verificata), servizio utente `~/.config/systemd/user/syncthing.service`
+  (`systemctl --user status syncthing`), interfaccia su `http://127.0.0.1:8384`. Aggiornamento: scaricare il nuovo rilascio e sostituire il binario.
+- **Password interfaccia del Pi:** in `/home/fra078/.syncthing-gui-password` sul Pi (600).
 - **ID dispositivo del Pi:** `docker exec syncthing syncthing device-id` (oppure nell'interfaccia web, Azioni → Mostra ID).
 - **Cartelle nel container:** `/data/local/<nome>` = `/home/fra078/sync/<nome>` (NVMe); `/data/mnt/mycloud/sync/<nome>` = NAS.
   Se il NAS non c'è, le cartelle NAS vanno in errore "folder marker missing" e si fermano senza cancellare nulla; tornano da sole.

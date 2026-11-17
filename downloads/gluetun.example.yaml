@@ -1,0 +1,59 @@
+# VPN per i download — NON ATTIVO. Per attivarlo:
+#  1. Abbonamento a un provider con WireGuard + port forwarding (ProtonVPN, AirVPN, PIA).
+#  2. Aggiungere a .env: VPN_PROVIDER, WIREGUARD_PRIVATE_KEY, WIREGUARD_ADDRESSES (+ SERVER_COUNTRIES).
+#  3. Sostituire docker-compose.yaml con questo file e ridistribuire lo stack "downloads".
+#  4. In Sonarr/Radarr/Lidarr il client qBittorrent diventa host "gluetun", porta 8080.
+#  5. Per slskd: spostarlo qui con network_mode: service:gluetun e pubblicare 5030 su gluetun;
+#     nei plugin di Lidarr (Tubifarry) l'host diventa "gluetun".
+#  Verifica: docker exec qbittorrent curl -s ifconfig.me  -> deve essere diverso dall'IP di casa.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3 # fissare la versione al momento dell'attivazione
+    container_name: gluetun
+    cap_add: [NET_ADMIN]
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      TZ: ${TZ}
+      VPN_SERVICE_PROVIDER: ${VPN_PROVIDER}
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+      WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
+      SERVER_COUNTRIES: ${SERVER_COUNTRIES:-Italy}
+      VPN_PORT_FORWARDING: "on"
+    ports:
+      - "127.0.0.1:9617:8080" # WebUI qBittorrent
+    networks: [media_net]
+    logging: *logging
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:5.2.1_v2.0.12-ls459
+    container_name: qbittorrent
+    network_mode: service:gluetun # tutto il traffico passa dal tunnel (kill switch)
+    depends_on:
+      gluetun: { condition: service_healthy }
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      WEBUI_PORT: 8080
+    volumes:
+      - ${APPDATA}/qbittorrent:/config
+      - type: bind
+        source: ${MEDIA_PATH}
+        target: /data
+        bind: { create_host_path: false }
+    labels:
+      homeserver.requires-nas: "true"
+    logging: *logging
+    restart: unless-stopped
+
+networks:
+  media_net:
+    name: media_net
+    external: true

@@ -1,29 +1,42 @@
+# Rete propria (office_default): nessun accesso agli altri servizi.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-office: &office
+  type: bind
+  source: ${OFFICE_PATH}
+  target: /data
+  bind: { create_host_path: false }
+
 services:
   filebrowser:
-    image: filebrowser/filebrowser:latest
+    image: filebrowser/filebrowser:v2.63.12
     container_name: filebrowser
     user: "${PUID}:${PGID}"
     environment:
-      - TZ=${TZ}
+      TZ: ${TZ}
     ports:
-      - 8345:80
+      - "127.0.0.1:8345:80"
     volumes:
-      - ${DATA_PATH}:/srv
-      - ${CONF_PATH}/filebrowser/filebrowser.db:/filebrowser.db
-      - ${CONF_PATH}/filebrowser/settings.json:/config/settings.json
-    networks:
-      - home_net
+      - <<: *office
+        target: /srv
+      - ${APPDATA}/office/filebrowser/filebrowser.db:/filebrowser.db
+      - ${APPDATA}/office/filebrowser/settings.json:/config/settings.json
+    labels:
+      homeserver.requires-nas: "true"
+    logging: *logging
     restart: unless-stopped
+
   webdav:
-    image: hacdias/webdav
-    restart: always
-    networks:
-      - home_net
+    image: hacdias/webdav:v5.11.10
+    container_name: webdav
     ports:
-      - "8660:8080"
+      - "127.0.0.1:8660:8080"
     volumes:
-      - ${DATA_PATH}:/data
-      - ${CONF_PATH}/webdav/config.yml:/config.yml
-networks:
-  home_net:
-    external: true
+      - *office
+      - ${APPDATA}/office/webdav/config.yml:/config.yml
+    labels:
+      homeserver.requires-nas: "true"
+    logging: *logging
+    restart: unless-stopped

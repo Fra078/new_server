@@ -1,0 +1,85 @@
+{
+  "version": "0.0.1",
+  "services": {
+    "svc:files": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8345"
+      }
+    },
+    "svc:glances": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:61208"
+      }
+    },
+    "svc:home": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:3000"
+      }
+    },
+    "svc:homeassistant": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8123"
+      }
+    },
+    "svc:jellyfin": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8096"
+      }
+    },
+    "svc:kuma": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:3001"
+      }
+    },
+    "svc:lidarr": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8686"
+      }
+    },
+    "svc:mycloud": {
+      "endpoints": {
+        "tcp:445": "tcp://192.168.1.18:445"
+      }
+    },
+    "svc:navidrome": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:4533"
+      }
+    },
+    "svc:portainer": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:9000"
+      }
+    },
+    "svc:prowlarr": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:9696"
+      }
+    },
+    "svc:qbit": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:9617"
+      }
+    },
+    "svc:radarr": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:7878"
+      }
+    },
+    "svc:slskd": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:5030"
+      }
+    },
+    "svc:sonarr": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8989"
+      }
+    },
+    "svc:webdav": {
+      "endpoints": {
+        "tcp:443": "http://127.0.0.1:8660"
+      }
+    }
+  }
+}

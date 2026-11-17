@@ -1,28 +1,39 @@
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
 services:
   uptime_kuma:
-    image: louislam/uptime-kuma:1
+    image: louislam/uptime-kuma:1.23.17
     container_name: uptime_kuma
     environment:
-      - TZ=${TZ}
+      TZ: ${TZ}
     volumes:
-      - ${CONF_PATH}/uptime_kuma:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APPDATA}/monitoring/uptime_kuma:/app/data
+    # Monitor Docker: host Docker configurato in Kuma come tcp://socket-proxy:2375
     ports:
-      - "3001:3001"
-    networks:
-      - home_net
+      - "127.0.0.1:3001:3001"
+    networks: [media_net, socket_net]
+    logging: *logging
     restart: unless-stopped
+
   glances:
-    image: nicolargo/glances:latest-full
+    image: nicolargo/glances:4.5.4-full
     container_name: glances
     pid: host
     network_mode: host
     environment:
-      - GLANCES_OPT=-w
+      GLANCES_OPT: "-w -B 127.0.0.1" # solo locale: esposto via Tailscale (svc:glances)
+      DOCKER_HOST: tcp://127.0.0.1:2375 # socket-proxy in sola lettura (stack core)
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/host:ro
+    logging: *logging
     restart: unless-stopped
+
 networks:
-  home_net:
+  media_net:
+    name: media_net
+    external: true
+  socket_net:
+    name: socket_net
     external: true

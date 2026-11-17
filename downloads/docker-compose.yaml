@@ -1,20 +1,32 @@
+# Quando si attiva la VPN, vedere gluetun.example.yaml in questa cartella.
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
 services:
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:5.2.1_v2.0.12-ls459
     container_name: qbittorrent
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - WEBUI_PORT=8080
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      WEBUI_PORT: 8080
     volumes:
-      - ${CONF_PATH}/qbittorrent:/config
-      - ${DATA_PATH}:/data
+      - ${APPDATA}/qbittorrent:/config
+      - type: bind
+        source: ${MEDIA_PATH}
+        target: /data
+        bind: { create_host_path: false }
     ports:
-      - 9617:8080
-    networks:
-      - home_net
+      - "127.0.0.1:9617:8080"
+    networks: [media_net]
+    labels:
+      homeserver.requires-nas: "true"
+    logging: *logging
     restart: unless-stopped
+
 networks:
-  home_net:
+  media_net:
+    name: media_net
     external: true

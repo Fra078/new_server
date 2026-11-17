@@ -1,36 +1,65 @@
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin:12.0ubu2604-ls48
     container_name: jellyfin
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
     volumes:
-      - ${CONF_PATH}/jellyfin:/config
-      - ${DATA_PATH}/media:/data/media
-    networks:
-      - home_net
+      - ${APPDATA}/media/jellyfin:/config
+      - type: bind
+        source: ${MEDIA_PATH}/media
+        target: /data/media
+        bind: { create_host_path: false }
     ports:
-      - 8096:8096
+      - "8096:8096" # resta in LAN (TV) oltre che via Tailscale
+    networks: [media_net]
+    labels:
+      homeserver.requires-nas: "true"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8096/jellyfin/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 3m
+    logging: *logging
     restart: unless-stopped
+
   navidrome:
-    image: deluan/navidrome:latest
+    image: deluan/navidrome:0.62.0
     container_name: navidrome
     environment:
-      - ND_SCANINTERVAL=1m
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      ND_SCANINTERVAL: 15m # scansione via CIFS: ogni minuto era un carico costante sul NAS
     volumes:
-      - ${CONF_PATH}/navidrome:/data
-      - ${DATA_PATH}/media/music:/music:ro
-    networks:
-      - home_net
+      - ${APPDATA}/media/navidrome:/data
+      - type: bind
+        source: ${MEDIA_PATH}/media/music
+        target: /music
+        read_only: true
+        bind: { create_host_path: false }
     ports:
-      - 4533:4533
+      - "127.0.0.1:4533:4533"
+    networks: [media_net]
+    labels:
+      homeserver.requires-nas: "true"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4533/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 1m
+    logging: *logging
     restart: unless-stopped
+
 networks:
-  home_net:
-    name: home_net
-    external: true    
+  media_net:
+    name: media_net
+    external: true

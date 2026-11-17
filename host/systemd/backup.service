@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup restic di appdata, Portainer e configurazione host sul NAS
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/homeserver/backup.sh
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=2h

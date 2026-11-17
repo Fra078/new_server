@@ -1,25 +1,31 @@
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
 services:
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.1.2-alpine
     container_name: mosquitto
-    restart: unless-stopped
     ports:
-      - "1883:1883"
+      - "1883:1883" # resta in LAN per i dispositivi IoT (autenticazione obbligatoria)
     volumes:
-      - ${CONF_PATH}/mosquitto/config:/mosquitto/config
-      - ${CONF_PATH}/mosquitto/data:/mosquitto/data
-      - ${CONF_PATH}//mosquitto/log:/mosquitto/log
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    volumes:
-      - ${CONF_PATH}/homeassistant:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
+      - ${APPDATA}/homeassistant/mosquitto/config:/mosquitto/config
+      - ${APPDATA}/homeassistant/mosquitto/data:/mosquitto/data
+      - ${APPDATA}/homeassistant/mosquitto/log:/mosquitto/log
+    logging: *logging
     restart: unless-stopped
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:2026.8.2
+    container_name: homeassistant
+    # privileged + host network: necessari per Bluetooth, mDNS/discovery e dispositivi locali
     privileged: true
     network_mode: host
     environment:
-      DISABLE_JEMALLOC: true
-      TZ: Europe/Rome
-      
+      TZ: ${TZ}
+    volumes:
+      - ${APPDATA}/homeassistant/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    logging: *logging
+    restart: unless-stopped

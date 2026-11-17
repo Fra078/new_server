@@ -1,0 +1,3 @@
+# NAS WD My Cloud Home. noauto: il mount lo fa nas-mount.service quando il NAS risponde
+# (al boot il Pi riparte prima del NAS). Il mountpoint sottostante è chattr +i.
+//192.168.1.18/admin123 /mnt/mycloud cifs credentials=/etc/.smbcreds,uid=1000,gid=1000,vers=3.0,dir_mode=0775,file_mode=0664,noauto,_netdev,x-systemd.mount-timeout=30 0 0

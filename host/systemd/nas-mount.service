@@ -1,0 +1,13 @@
+[Unit]
+Description=Attende il NAS, monta /mnt/mycloud e avvia i container che ne dipendono
+Documentation=https://github.com/Fra078/new_server/blob/main/CLAUDE.md
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+
+[Service]
+# simple (non oneshot): l'attesa del NAS non deve bloccare il completamento del boot
+Type=simple
+ExecStart=/usr/local/lib/homeserver/nas-mount.sh
+
+[Install]
+WantedBy=multi-user.target

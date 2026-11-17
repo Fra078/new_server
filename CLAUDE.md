@@ -101,7 +101,7 @@ systemctl start backup.service && journalctl -u backup -f
 
 ## Operazioni comuni
 - **Aggiornare un servizio:** cambiare il tag dell'immagine nel compose (o accettare la PR di Renovate) → merge su `main` → Portainer lo applica entro 5 minuti (subito: `scripts/portainer-stacks.sh <stack>`).
-- **Aggiungere un servizio:** aggiungerlo al compose dello stack giusto con: porta `127.0.0.1:`, `logging`, rete corretta, `bind.create_host_path: false` + label `homeserver.requires-nas` se usa il NAS. Poi un Tailscale Service in `host/tailscale/serve.json` (da definire anche nella admin console) e `tailscale serve set-config --all host/tailscale/serve.json`.
+- **Aggiungere un servizio:** aggiungerlo al compose dello stack giusto con: porta `127.0.0.1:`, `logging`, rete corretta, `bind.create_host_path: false` + label `homeserver.requires-nas` se usa il NAS. Poi un Tailscale Service in `host/tailscale/serve.json` (da definire anche nella admin console) e `sudo host/scripts/tailscale-serve.sh host/tailscale/serve.json` (non usare `tailscale serve set-config`: tratta gli endpoint come HTTP semplice).
 - **Variabili:** sono in `/opt/homeserver/.env`; dopo una modifica `scripts/portainer-stacks.sh` le ripassa a tutti gli stack.
 - **Modifiche a core/ o portainer/:** `scripts/infra-up.sh`.
 - **Modifiche a host/:** `sudo host/install.sh` (idempotente).

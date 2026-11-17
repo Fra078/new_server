@@ -45,9 +45,14 @@ if ! grep -qxF "$line" /etc/fstab; then
 fi
 install -d /mnt/mycloud
 if mountpoint -q /mnt/mycloud; then
+    # Da montato lsattr vede il NAS, non la cartella sottostante: la si controlla con un bind di /
     [ -e /mnt/mycloud/media_stack/.nas-sentinel ] || touch /mnt/mycloud/media_stack/.nas-sentinel
-    lsattr -d /mnt/mycloud 2>/dev/null | grep -q -- '-i-' ||
-        NOTES+=("/mnt/mycloud è montato: 'chattr +i /mnt/mycloud' va applicato da smontato (vedi CLAUDE.md, Migrazione mount)")
+    install -d /run/rootview && mount --bind / /run/rootview
+    lsattr -d /run/rootview/mnt/mycloud | grep -q -- '-i-' || {
+        [ -z "$(ls -A /run/rootview/mnt/mycloud)" ] || NOTES+=("Ci sono file SOTTO il mountpoint /mnt/mycloud (sull'NVMe): controllarli")
+        chattr +i /run/rootview/mnt/mycloud
+    }
+    umount /run/rootview
 else
     chattr +i /mnt/mycloud
 fi
@@ -74,8 +79,8 @@ if ! grep -q 'cgroup_enable=memory' "$CMDLINE"; then
 fi
 
 echo "== Tailscale Serve"
-tailscale serve set-config --all "$H/tailscale/serve.json" ||
-    NOTES+=("tailscale serve set-config fallito: i Services nuovi vanno prima definiti nella admin console")
+"$H/scripts/tailscale-serve.sh" "$H/tailscale/serve.json" ||
+    NOTES+=("Tailscale Serve non applicato del tutto: i Services nuovi vanno prima definiti nella admin console")
 
 echo
 echo "Fatto."

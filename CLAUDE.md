@@ -105,6 +105,8 @@ systemctl start backup.service && journalctl -u backup -f
 - **Variabili:** sono in `/opt/homeserver/.env`; dopo una modifica `scripts/portainer-stacks.sh` le ripassa a tutti gli stack.
 - **Modifiche a core/ o portainer/:** `scripts/infra-up.sh`.
 - **Modifiche a host/:** `sudo host/install.sh` (idempotente).
+- **Integrazioni Home Assistant** verso servizi del Pi: usare `127.0.0.1:<porta>`, non `localhost` (che può risolvere su `::1`, dove le porte non ascoltano).
+- **Test blackout NAS senza spegnerlo:** `sudo nft add table inet nastest; sudo nft add chain inet nastest out '{ type filter hook output priority 0; }'; sudo nft add rule inet nastest out ip daddr 192.168.1.18 drop` → osservare `journalctl -fu nas-watchdog` → `sudo nft delete table inet nastest`.
 - **Stato NAS:** `cat /run/homeserver/nas.state; journalctl -u nas-watchdog --since -1h`.
 
 ## Decisioni e motivazioni
@@ -126,4 +128,5 @@ systemctl start backup.service && journalctl -u backup -f
 - UPS.
 
 ## Storia
+- 2026-11-17: deploy della ristrutturazione. Trovate e rimosse cartelle vuote create da Docker l'11 giugno *sotto* il mountpoint (container partiti senza NAS: il problema dei blackout). Test superati: NAS bloccato a server acceso (container NAS fermati in ~3 min, ripresi ~1 min dopo il ritorno); riavvio con NAS bloccato (servizi indipendenti su, container NAS fermi, nulla scritto sull'NVMe; ripresa 13 s dopo il ritorno del NAS). Integrazioni HA qBittorrent/Kuma/Glances passate da `localhost` a `127.0.0.1` (le porte ora ascoltano solo su IPv4 locale).
 - 2026-11-14: ristrutturazione — backup restic, gestione NAS al boot, porte su 127.0.0.1, reti separate, socket-proxy, versioni fissate, rotazione log, hardening SSH, rimozione servizi inutilizzati (tg_forwarder, jellyseerr, mixarr, spotiflac, netdata, speedtest-tracker, dashy, homarr, caddy).

@@ -26,7 +26,7 @@ Internet ── router ── LAN 192.168.1.0/24
 ### Reti Docker
 | Rete | Chi | Perché |
 |---|---|---|
-| `media_net` (da `core/`) | prowlarr, sonarr, radarr, lidarr, qbittorrent, slskd, deemix, lidarr-downloader, jellyfin, navidrome, homepage, uptime_kuma | devono parlarsi: *arr ↔ download client ↔ plugin Lidarr ↔ Jellyfin; widget e monitor |
+| `media_net` (da `scripts/infra-up.sh`) | prowlarr, sonarr, radarr, lidarr, qbittorrent, slskd, deemix, lidarr-downloader, jellyfin, navidrome, homepage, uptime_kuma | devono parlarsi: *arr ↔ download client ↔ plugin Lidarr ↔ Jellyfin; widget e monitor |
 | `socket_net` (da `core/`, `internal`) | socket-proxy, homepage, uptime_kuma | accesso al Docker API in **sola lettura**, nessuna uscita a Internet |
 | `mgmt_net` (da `portainer/`) | portainer, homepage | widget Portainer; Portainer isolato da tutto il resto |
 | `office_default` | filebrowser, webdav | isolati |

@@ -33,9 +33,6 @@ services:
     restart: unless-stopped
 
 networks:
-  # Servizi media che devono parlarsi (*arr, download client, Jellyfin, Navidrome, Homepage, Kuma)
-  media_net:
-    name: media_net
   # Rete interna: solo homepage/uptime_kuma <-> socket-proxy, nessuna uscita verso Internet
   socket_net:
     name: socket_net

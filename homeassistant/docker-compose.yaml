@@ -23,7 +23,6 @@ services:
     network_mode: host
     environment:
       TZ: ${TZ}
-      DISABLE_JEMALLOC: "true"
     volumes:
       - ${APPDATA}/homeassistant/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro

@@ -59,7 +59,7 @@ services:
     restart: unless-stopped
 
   radarr:
-    image: lscr.io/linuxserver/radarr:6.1.1.10360-ls304@sha256:c0a4335d4249b46102f64cf6fa27ffc3bddfd9138fac1e4ddf238afd37f02d1f
+    image: lscr.io/linuxserver/radarr:6.4.4.10685-ls327@sha256:7a20f20de63706eee2ff6e4ac1f989a70c961f456aa47ccb6c78f2bb7657d9ae
     container_name: radarr
     environment: *env
     volumes:

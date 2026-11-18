@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   glances:
-    image: nicolargo/glances:4.5.4-full@sha256:4b95c50820107884574059741a1a787bfae3b499e8b003be32abc9d756084c06
+    image: nicolargo/glances:4.5.9-full@sha256:0b309652e8a4f2e827b823609044b9976b309765517760c0383d2e4f73f756c5
     container_name: glances
     pid: host
     network_mode: host

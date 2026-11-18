@@ -11,7 +11,7 @@ x-office: &office
 
 services:
   filebrowser:
-    image: filebrowser/filebrowser:v2.63.12@sha256:fc8c3a46c16bbdf97362b20c50164e97de9c1dd5f63230d28a4cb15248b53ec3
+    image: filebrowser/filebrowser:v2.63.23@sha256:a469ea076d4a1b4b1d86a41d130f2f536cd9da996a2b1fb39c0d7635f9d89b9a
     container_name: filebrowser
     user: "${PUID}:${PGID}"
     environment:

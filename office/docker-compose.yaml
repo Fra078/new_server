@@ -11,7 +11,7 @@ x-office: &office
 
 services:
   filebrowser:
-    image: filebrowser/filebrowser:v2.63.12
+    image: filebrowser/filebrowser:v2.63.12@sha256:fc8c3a46c16bbdf97362b20c50164e97de9c1dd5f63230d28a4cb15248b53ec3
     container_name: filebrowser
     user: "${PUID}:${PGID}"
     environment:
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   webdav:
-    image: hacdias/webdav:v5.11.10
+    image: hacdias/webdav:v5.11.10@sha256:2b708c56b4f36cd75c56d29f22ca1b7bd364782ee15c184182a4187a03538fde
     container_name: webdav
     ports:
       - "127.0.0.1:8660:8080"

@@ -18,7 +18,7 @@ x-nas: &nas
 
 services:
   deemix:
-    image: ghcr.io/bambanah/deemix:v4.5.2@sha256:cd53202a41e77066419af2af9e1ff68b2d68682df3698e6a5e84d9b29a12912d
+    image: ghcr.io/bambanah/deemix:v4.8.0@sha256:aff6120619685b339a704b49bec13469684dbec2c7e39cd7bdf0014217dd1d0a
     container_name: deemix
     environment: *env
     volumes:

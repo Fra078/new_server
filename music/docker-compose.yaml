@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
   lidarr-downloader:
-    image: angrido/lidarr-downloader:latest@sha256:7df4fdf96a95b54416cb43e63c42ebb8747e0f1a71638541f2b1154df70c6609
+    image: angrido/lidarr-downloader:latest@sha256:8cd0a8dda8d915383d05d1907700c66aca77e6f1fd70a8e1a08d1d4dcc4c0d6e
     container_name: lidarr-downloader
     environment:
       <<: *env

@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
 
   webdav:
-    image: hacdias/webdav:v5.11.10@sha256:2b708c56b4f36cd75c56d29f22ca1b7bd364782ee15c184182a4187a03538fde
+    image: hacdias/webdav:v5.17.3@sha256:3b70d2a3afd5bb2f8b3aadb621baa3788c2248b30da3a4698352fc96fef0de40
     container_name: webdav
     ports:
       - "127.0.0.1:8660:8080"

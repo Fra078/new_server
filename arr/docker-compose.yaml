@@ -21,7 +21,7 @@ x-nas: &nas
 services:
   lidarr:
     # nightly: necessario per i plugin (Tubifarry, Deemix)
-    image: lscr.io/linuxserver/lidarr:nightly-4.0.0.5222-ls226@sha256:80b85c9c4dbf8738812cc4b30a2053b26f8f71756e173301a827b5de9c9123c8
+    image: lscr.io/linuxserver/lidarr:nightly-4.0.0.5227-ls227@sha256:969a82b8374db468eb9f68ce3cec88c747b5a9cda28f00fa617ee45c9e8e76c0
     container_name: lidarr
     environment: *env
     volumes:
